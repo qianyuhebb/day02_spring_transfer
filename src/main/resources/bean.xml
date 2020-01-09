@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+<!--    告知spring在创建容器的时候，需要扫描的包
+      配置所需要的标签不是在beans的约束中，而是一个名为context的名称空间和约束中
+-->
+<!--   <context:component-scan base-package="com"></context:component-scan>-->
+
+    <!--     将bean的创建交给spring-->
+    <bean id="accountService" class="com.service.impl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"></property>
+        <property name="transactionManager" ref="transactionManager"></property>
+    </bean>
+
+    <bean id="accountDao" class="com.dao.impl.AccountDaoImpl">
+        <property name="runner" ref="runner"></property>
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype">
+        <!--     注入数据源-->
+<!--        <constructor-arg name="ds" ref="dataSource"></constructor-arg>-->
+    </bean>
+
+
+    <!--  配置数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl"  value="jdbc:mysql://localhost:3306/eesy?characterEncoding=utf8"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+    <bean id="transactionManager" class="com.utils.TransactionManager">
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <bean id="connectionUtils" class="com.utils.ConnectionUtils">
+       <property name="dataSource" ref="dataSource"></property>
+    </bean>
+</beans>
